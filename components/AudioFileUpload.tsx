@@ -13,7 +13,7 @@ import {
   LinearProgress,
 } from "@mui/material";
 import { Skeleton } from "@mui/material";
-import facts from "./fact.json"; // Import a JSON file containing random facts
+import facts from "./facts.json"; // Import a JSON file containing random facts
 import ReactMarkdown from "react-markdown";
 
 interface AudioFileUploadProps {
@@ -85,24 +85,6 @@ const AudioFileUpload: React.FC<AudioFileUploadProps> = ({ slideText }) => {
     }, 30);
   };
 
-  const prompter = (slideText: string, convertedText: string) => {
-    return `SlideText:
-    { ${slideText} }
-    
-    User's Speech:
-    { ${convertedText} }
-    
-    Scenario: The user plans to deliver the "User's Speech" to an audience while displaying the "Slide Text" on presentation slides. Your goal is to make his speech sound better by answering the following tasks to the user.
-    
-    Please complete the following tasks based on the content provided in the "Slide Text" and "User's Speech" sections:
-    1. Assess the relevance of the "User's Speech" in relation to the "Slide Text," and provide feedback on word choice and sentence structure. Suggest alternative words or phrases when necessary. Answer by addressing him.
-    2. Revise the "User's Speech" section, incorporating the feedback from task 1.
-    3. Provide feedback on the revised "User's Speech" section you've written.
-    
-    Present your responses in a list format for each of the three tasks and directly, without any headings.
-  }
-    `;
-  };
 
   const generateContent = async (prompt: string) => {
     setGeneratedContent("");
