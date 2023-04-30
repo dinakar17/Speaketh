@@ -1,0 +1,10 @@
+/* Hide the scroll bar on the home page */
+html.homePage::-webkit-scrollbar {
+    display: none;
+  }
+  
+  html.homePage {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  

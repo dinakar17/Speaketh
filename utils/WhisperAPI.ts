@@ -1,3 +1,5 @@
+// utils/WhisperAPI.ts
+
 export const translateSpeechToText = async (formData: FormData | null) : Promise<any> => {
   const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
     headers: {

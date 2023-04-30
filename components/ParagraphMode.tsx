@@ -14,7 +14,15 @@ interface ParagraphModeProps {
   start: boolean;
 }
 
-const countDown = 10;
+const splitString = (str: string) => {
+  // find the word "Description:" and split the string into two parts
+  const splitIndex = str.indexOf("Description:");
+  const firstPart = str.slice(0, splitIndex);
+  const secondPart = str.slice(splitIndex).trim();
+  return [firstPart, secondPart];
+};
+
+const countDown = 40;
 const characterLimit = 1000;
 
 const ParagraphMode = (props: ParagraphModeProps) => {
@@ -42,15 +50,13 @@ const ParagraphMode = (props: ParagraphModeProps) => {
     e.preventDefault();
     toast.error("Pasting text is not allowed.");
   };
-  const prompter = (text: string) => text;
 
   const startAnalyzing = async () => {
     if (!textAreaValue) {
       toast.error("You need to write something first.");
       return;
     }
-
-    const prompt = prompter(`a prompt`);
+    const prompt = `Give me a list of 3 points (numbered format based i.e., 1. 2. 3.) on the text ${textAreaValue} which is a paragraph written by me based on the topic ${title}.\n The first point is a paragraph on how relevant my writing is to the topic, feedback on grammar, words choice, and sentence structure and finally suggestions on areas to improve upon.\n The second point is a revised version of the speech with the suggested changes.\n The third point is a paragraph on how the revised version is better than the original version.`
 
     setLoading(true);
     generateContent(prompt, setGeneratedContent);
@@ -58,17 +64,15 @@ const ParagraphMode = (props: ParagraphModeProps) => {
   };
 
   return (
-    <>
+    <div className="py-8">
       <h1 className="flex justify-center items-center gap-4 text-3xl font-bold text-center mb-8">
-        Write for a minute <Pencil fill="purple" />
+        Write for 2 min <Pencil fill="purple" />
       </h1>
       <div className="flex flex-col gap-4">
-        <div className="">
-          <h2 className="text-xl font-semibold">Your Topic is: {title} </h2>
+      <div className="">
+          <h2 className="text-xl font-semibold"> {splitString(title)[0]}</h2>
           <p className="text-gray-600 dark:text-gray-300">
-            Talk about something about its consectetur adipiscing elit. Aliquam
-            et aliquam mi. Proin quis lobortis leo, eget egestas sapien. Mauris
-            eu porta justo.
+            {splitString(title)[1]}
           </p>
         </div>
         <div className="flex flex-col gap-4 justify-center items-center">
@@ -99,78 +103,44 @@ const ParagraphMode = (props: ParagraphModeProps) => {
           <button
             onClick={startAnalyzing}
             disabled={loading}
-            className="bg-blue-500 mx-auto text-white px-6 py-2 rounded mt-4"
+            className="bg-blue-500 w-full mx-auto text-white px-6 py-2 rounded my-4"
           >
             Start Analyzing
           </button>
-          {generatedContent && (
-            <>
+          {generatedContent !== "" && (
               <div className="flex flex-col gap-4 mx-auto max-w-screen-lg">
                 {generatedContent
                   .substring(generatedContent.indexOf("1") + 3)
-                  .split("2.")
+                  // split based on the regex i.e., number followed by a dot followed by a space
+                  .split(/\d\.\s/)
                   .map((content, index) => {
                     return (
                       <Draggable axis="y" key={content}>
                         <div
-                          className="bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition cursor-copy border"
-                          onClick={() => {
-                            navigator.clipboard.writeText(content);
-                            toast("Bio copied to clipboard", {
-                              icon: "✂️",
-                            });
-                          }}
+                          className="bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition border"
                           key={content}
                         >
-                          {index === 0 && (
-                            <>
-                              <h2 className="text-lg font-bold mb-1">
-                                Feedback on your speech
-                              </h2>
-                              <p className="text-gray-600 w-full mx-auto p-2 prose prose-sm max-w-screen-xl prose-indigo md:prose-base dark:prose-invert overflow-auto">
-                                <ReactMarkdown>
-                                  {preprocessMarkdown(content)}
-                                </ReactMarkdown>
-                              </p>
-                            </>
-                          )}
-                          {index === 1 && (
-                            <>
-                              <h2 className="text-lg font-bold mb-1">
-                                Revised Speech with Improvements
-                              </h2>
-                              {content.split("3.").map((content, index) => {
-                                return (
-                                  <div key={content}>
-                                    {index === 0 && (
-                                      <p className="text-gray-600 w-full mx-auto p-2 prose prose-sm max-w-screen-xl prose-indigo md:prose-base dark:prose-invert overflow-auto">
-                                        <ReactMarkdown>
-                                          {preprocessMarkdown(content)}
-                                        </ReactMarkdown>
-                                      </p>
-                                    )}
-                                    {index === 1 && (
-                                      <p className="text-gray-600 mt-3 w-full mx-auto p-2 prose prose-sm max-w-screen-xl prose-indigo md:prose-base dark:prose-invert overflow-auto">
-                                        <ReactMarkdown>
-                                          {preprocessMarkdown(content)}
-                                        </ReactMarkdown>
-                                      </p>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </>
-                          )}
+                          <h2 className="text-lg font-bold mb-1">
+                            {index === 0
+                              ? "Feedback on your writing"
+                              : index === 1
+                              ? "Revised version of your writing"
+                              : "How the revised version is better than the original version"}
+                          </h2>
+                          <p className="text-gray-600 w-full mx-auto p-2 prose prose-sm max-w-screen-xl prose-indigo md:prose-base dark:prose-invert overflow-auto">
+                            <ReactMarkdown>
+                              {preprocessMarkdown(content)}
+                            </ReactMarkdown>
+                          </p>
                         </div>
                       </Draggable>
                     );
                   })}
               </div>
-            </>
-          )}
+            )}
         </>
       )}
-    </>
+    </div>
   );
 };
 

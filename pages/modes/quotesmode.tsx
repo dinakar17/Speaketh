@@ -1,105 +1,75 @@
-import Button from "@/components/ui/button ";
-import { Flame } from "lucide-react";
-import Image from "next/image";
-import React from "react";
+import QuotesMode from "@/components/QuotesModePage/QuotesMode ";
+import Welcome from "@/components/QuotesModePage/Welcome ";
+import { generateGPT3Response } from "@/utils/Gpt3API ";
+import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 
-type ListItemProps = {
-  icon: React.ReactNode;
+export type MessageType = {
+  id: number;
   text: string;
+  isUser: boolean;
+  isLoading?: boolean;
 };
 
-const ListItem: React.FC<ListItemProps> = ({ icon, text }) => (
-  <div className="flex">
-    <div className="mr-2">{icon}</div>
-    <div>{text}</div>
-  </div>
-);
+const Quotesmode = () => {
+  const [messages, setMessages] = useState<MessageType[]>([]);
+  const [quote, setQuote] = useState<string>("");
 
-const QuotesMode = () => {
-  const handleClick = () => {
-    console.log("clicked");
+  const handleClick = async () => {
+    try{
+     // fetch a random quote from the api.quoteable.io
+     const response = await fetch("https://api.quotable.io/random?minLength=50&maxLength=100");
+     if (!response.ok) {
+       throw new Error("Error fetching quote");
+     }
+     const data = await response.json();
+
+     const quote = data.content;
+     const author = data.author;
+     setQuote(quote);
+
+    // Add a loader for the GPT-3 response
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now() + 1, text: `"Quote": ${quote} \n\n "Author": ${author}. \n\n`, isUser: false, isLoading: true },
+    ]);
+
+    const appendGpt3Response = (response: string) => {
+      setMessages((prev) => {
+        const lastMessage = prev[prev.length - 1];
+
+        if (lastMessage && !lastMessage.isUser) {
+          // Update the last GPT-3 message with the new response chunk
+          return prev.map((message) =>
+            message.id === lastMessage.id
+              ? { ...message, text: message.text + response, isLoading: false }
+              : message
+          );
+        } else {
+          // If the last message is from the user, create a new GPT-3 message
+          return [
+            ...prev,
+            { id: Date.now(), text: response, isUser: false, isLoading: false },
+          ];
+        }
+      });
+    };
+
+    const prompt = `Quote: ${quote} \n Author: ${author}. \n\n. Write a short decription on what I could learn in terms of words, phrases, and sentence structure from this quote. And give an extremely short and simple one line sentence assignment based on quote's grammar, words, and sentence structure.\n Feedback: \n Assignment: `
+
+    // Send transcribedText to GPT-3 and get the response
+    await generateGPT3Response(prompt, appendGpt3Response);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto py-4 px-2 flex flex-col">
-      <div className="p-8">
-        <h1 className="text-3xl text-center font-bold mb-8">
-          Welcome to the{" "}
-          <span className="text-blue-600">Speech for a min mode</span>
-        </h1>
-        <div className="flex justify-center">
-          <Image
-            src="/images/oneminspeech.png"
-            alt="Speech Mode"
-            width={300}
-            height={200}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-8 mt-8">
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Rules</h2>
-            <ol className="list-decimal list-inside text-gray-800">
-              <li>Click the “I am ready” button</li>
-              <li>
-                The moment you press that button you’ll be presented with a
-                topic to review for 5-10 sec and a stopwatch timer.
-              </li>
-              <li>
-                When you feel you’re ready, start recording your speech and try
-                to complete it in under 30 sec (recording will be automatically
-                stopped if you exceed the time limit)
-              </li>
-              <li>
-                Click start analysis to see your results. You can also listen to
-                your speech and see the transcript.
-              </li>
-            </ol>
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Perks</h2>
-            <ul className="list-none list-inside text-gray-800">
-              <ListItem
-                icon="🚀"
-                text="Swift Thinking: Train your mind to think on its feet."
-              />
-              <ListItem
-                icon="💬"
-                text="Eloquence Boost: Sharpen your verbal skills."
-              />
-              <ListItem
-                icon="🦸"
-                text="Confidence Builder: Face your public speaking fears."
-              />
-              <ListItem
-                icon="⏱️"
-                text="Time Management: Deliver speeches within a tight timeframe."
-              />
-              <ListItem
-                icon="📚"
-                text="Engaging Storytelling: Captivate audiences with compelling narratives."
-              />
-              <ListItem
-                icon="📝"
-                text="Persuasive Speaking: Convince others to see things your way."
-              />
-            </ul>
-          </div>
-        </div>
-
-        <p className="text-xl mt-8">4 simple rules! That’s it.</p>
-        <div className="flex justify-center mt-8">
-          <Button
-            bgcolor="bg-blue-500"
-            icon={<Flame />}
-            eventHandler={handleClick}
-          >
-            I&apos;m ready
-          </Button>
-        </div>
-      </div>
+    <div className="max-w-screen-lg mx-auto px-2 flex flex-col">
+      {messages.length === 0 ? <Welcome handleClick={handleClick} /> : 
+      <QuotesMode messages={messages} setMessages={setMessages} quote={quote}/>}
     </div>
   );
 };
 
-export default QuotesMode;
+export default Quotesmode;

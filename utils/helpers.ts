@@ -7,7 +7,7 @@ export const getRandomFact = () => {
 
 export function preprocessMarkdown(markdownString: string) {
   // Add newline character before each numbered point and hyphen with spaces on both sides
-  const withNewLines = markdownString.replace(/(\d+\.|\s-\s)/g, "\n$1");
+  const withNewLines = markdownString.replace(/(\d+\.|\s-\s)/g, "\n$1"); 
 
   // Add bold markdown for words between double quotes
   const withBoldQuotes = withNewLines.replace(/"([^"]*)"/g, "**$1**");

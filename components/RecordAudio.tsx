@@ -134,6 +134,7 @@ const RecordAudio: React.FC<RecordAudioProps> = (props) => {
   }, []);
 
   return (
+    <>
     <div className="border relative flex flex-col justify-center items-center h-72 w-full shadow-lg rounded-md">
       <div className="absolute top-6 w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
         <div
@@ -223,6 +224,7 @@ const RecordAudio: React.FC<RecordAudioProps> = (props) => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,10 +1,14 @@
-// chatmode.tsx
 import { useState, useEffect, useRef } from "react";
 import { translateSpeechToText } from "@/utils/WhisperAPI ";
 import { toast } from "react-hot-toast";
 import toWav from "audiobuffer-to-wav";
-import { generateContent, generateGPT3Response } from "@/utils/Gpt3API ";
+import {
+  chatResponse,
+  generateContent,
+  generateGPT3Response,
+} from "@/utils/Gpt3API ";
 import { ThreeDots } from "react-loader-spinner";
+import { ChatGPTMessage } from "@/utils/OpenAIStream ";
 type ListItemProps = {
   icon: React.ReactNode;
   text: string;
@@ -34,6 +38,22 @@ type MessageType = {
   isUser: boolean;
   isLoading?: boolean;
 };
+
+function prompter(messages: MessageType[], systemPrompt: string) {
+  const formattedMessages: ChatGPTMessage[] = [
+    { role: "system", content: systemPrompt },
+  ];
+  console.log("messages", messages);
+
+  messages.forEach((message, index) => {
+    formattedMessages.push({
+      role: message.isUser ? "user" : "assistant",
+      content: message.text,
+    });
+  });
+
+  return formattedMessages;
+}
 
 const ChatMode = () => {
   const [messages, setMessages] = useState<MessageType[]>([]);
@@ -152,13 +172,9 @@ const ChatMode = () => {
     const response = await fetch(audioPreviewUrl);
     const audioBlob = await response.blob();
 
-    console.log("audioBlob", audioBlob);
-    // create a file with the following format: path, lastModified, lastModifiedDate, name, size, type, webkitRelativePath
     const file = new File([audioBlob], "audio.wav", {
       type: "audio/wav",
     });
-
-    console.log("file", file);
 
     const data = new FormData();
     data.append("file", file);
@@ -175,17 +191,8 @@ const ChatMode = () => {
     }
     const transcribedText = textData.text;
 
-    const prompt = `
-      You are an AI model that tells the user how a native speaker would say the same thing and give reasons why and continue the conversation. \n\nText: ${transcribedText} \n\nCorrected Text:`;
+    const prompt = `You are an AI model that analyzes the text {${transcribedText}} and ${conversationMode === "Native Speaker" ? "tells me how a native speaker would say the same thing and give reasons why": "corrects the grammar of my text and gives feedback on areas I need to improve on"}and ask a simple and short followup question based on my text and topic: {${topic}} to continue the conversation \n\nCorrected Text:`;
 
-    // const prompt = `Your are an AI model that corrects the grammar of a text and gives feedback on areas he needs to improve. \n\nText: ${text} \n\nCorrected Text:`;
-
-    // // Add the user's message to the chat
-    // setMessages((prev) => [
-    //   ...prev,
-    //   { id: Date.now(), text: text, isUser: true, isLoading: false },
-    // ]);
-    // Update the user's message with the transcribed text and remove the loader
     setMessages((prev) =>
       prev.map((message) =>
         message.isLoading && message.isUser
@@ -193,6 +200,17 @@ const ChatMode = () => {
           : message
       )
     );
+
+    // const formattedMessages = prompter(messages, `You are a helpful assistant that chats on topic: ${topic}
+    //  ${conversationMode === "Grammar Correction" ? "Every single time the user sends a message, you correct the grammar of the text, give feedback on areas he needs to improve, give the correct sentence and continue the conversation." : "Every single time the user sends a message, you tell the user how a native speaker would say the same thing and give reasons why and continue the conversation."}`);
+
+    //  // push transcribed text to formattedMessages
+    //  formattedMessages.push({
+    //    role: "user",
+    //    content: transcribedText,
+    //   });
+
+    // console.log("formattedMessages", formattedMessages);
 
     // Add a loader for GPT-3's response
     setMessages((prev) => [
@@ -233,18 +251,6 @@ const ChatMode = () => {
 
     // Clear the audio preview
     setAudioPreviewUrl(null);
-  };
-
-  const sendAudioToWhisper = async (audioBlob: Blob): Promise<string> => {
-    // Mock-up code for sending audio to Whisper API and getting the transcribed text
-    const transcribedText = "Sample transcribed text from Whisper API";
-    return transcribedText;
-  };
-
-  const sendTextToGPT3 = async (text: string): Promise<string> => {
-    // Mock-up code for sending transcribed text to GPT-3 and getting the response
-    const gpt3Response = "Sample response from GPT-3";
-    return gpt3Response;
   };
 
   return (
@@ -307,7 +313,7 @@ const ChatMode = () => {
             <div className="flex flex-col items-center justify-center p-8">
               <h1 className="text-3xl text-center font-bold mb-8">
                 Welcome to the{" "}
-                <span className="text-blue-600"> Conversational AI Mode </span>{" "} 
+                <span className="text-blue-600"> Conversational AI Mode </span>{" "}
               </h1>
 
               <div className="grid grid-cols-2 gap-8 mt-8">
@@ -336,7 +342,7 @@ const ChatMode = () => {
                 </div>
                 <div className="bg-gray-100 shadow rounded-lg p-8">
                   <h2 className="text-xl font-semibold mb-4">
-                  🎁 What you can improve
+                    🎁 What you can improve
                   </h2>
                   <ul className="list-none list-inside text-gray-800">
                     <ListItem

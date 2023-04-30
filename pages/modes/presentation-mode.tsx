@@ -8,8 +8,6 @@ import { translateSpeechToText } from "@/utils/WhisperAPI ";
 import { AudioAnalysisDialog } from "@/components/loaders/Loaders ";
 import { getRandomFact, preprocessMarkdown } from "@/utils/helpers ";
 
-
-
 const PresentationMode: React.FC = () => {
   const [slideText, setSlideText] = useState<string>("");
   const [uploaded, setUploaded] = useState(false);
@@ -23,24 +21,8 @@ const PresentationMode: React.FC = () => {
   const [randomFact, setRandomFact] = useState<string | null>(null);
 
   const prompter = (slideText: string, convertedText: string) => {
-    return `SlideText:
-    { ${slideText} }
-    
-    User's Speech:
-    { ${convertedText} }
-    
-    Scenario: The user plans to deliver the "User's Speech" to an audience while displaying the "Slide Text" on presentation slides. Your goal is to make his speech sound better by answering the following tasks to the user.
-    
-    Please complete the following tasks based on the content provided in the "Slide Text" and "User's Speech" sections:
-    1. Assess the relevance of the "User's Speech" in relation to the "Slide Text," and provide feedback on word choice and sentence structure. Suggest alternative words or phrases when necessary. Answer by addressing him.
-    2. Revise the "User's Speech" section, incorporating the feedback from task 1.
-    3. Provide feedback on the revised "User's Speech" section you've written.
-    
-    Present your responses in a list format for each of the three tasks and directly, without any headings.
-  }
-    `;
+    return `Give me a list of 3 points (numbered format based i.e., 1. 2. 3.) on {${convertedText}} which is a speech based on the slide text {${slideText}}. The first point is a paragraph that assesses the relevance of speech in relation to the slide text providing feedback on word choice and sentence structure. Suggestions for alternative words or phrases are also provided. The second point is a revised speech incorporating the feedback from the first point. The third point is feedback on the revised speech.`;
   };
-
 
   const startAnalyzing = async () => {
     if (!audioFile) {
@@ -68,10 +50,7 @@ const PresentationMode: React.FC = () => {
 
     setConvertedText(textData.text);
 
-    const prompt = prompter(
-      `${slideText}`,
-      `${textData.text}`
-    );
+    const prompt = prompter(`${slideText}`, `${textData.text}`);
 
     setLoading(true);
     generateContent(prompt, setGeneratedContent);
@@ -110,27 +89,27 @@ const PresentationMode: React.FC = () => {
         uploadAudioProps={UploadAudioProps}
       />
       <div>
-        <h2 className="text-2xl font-semibold mb-2">Upload your audio</h2>
-        <p className="text-gray-700 mb-4">
-          Please kindly record your audio either on your local computer or
-          somewhere and upload it here
-        </p>
         {uploaded && (
           <>
-            <button
-              onClick={startAnalyzing}
-              disabled={loading}
-              className="bg-blue-500 text-white px-6 py-2 rounded mt-4"
-            >
-              Start Analyzing
-            </button>
+            <div className="flex items-center justify-center">
+              <button
+                onClick={startAnalyzing}
+                disabled={loading || openDialog}
+                className="bg-blue-500 px-6 text-white py-2 rounded my-4"
+              >
+                Start Analyzing
+              </button>
+            </div>
             <>
               {/* Dialog for Whisper API progress */}
-              <AudioAnalysisDialog openDialog={openDialog}  randomFact={randomFact} />
+              <AudioAnalysisDialog
+                openDialog={openDialog}
+                randomFact={randomFact}
+              />
               {/* Display converted text from audio */}
               {convertedText !== "" && (
                 <Draggable axis="y">
-                  <div className="mb-4 bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition cursor-copy border mx-auto max-w-screen-lg">
+                  <div className="mb-4 bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition border mx-auto max-w-screen-lg">
                     <h2 className="text-lg font-bold mt-4">Transcribed Text</h2>
                     <p className="mt-1 text-gray-600 w-full mx-auto p-2 prose prose-sm max-w-screen-xl prose-indigo md:prose-base dark:prose-invert overflow-auto">
                       {convertedText}
@@ -148,13 +127,7 @@ const PresentationMode: React.FC = () => {
                         return (
                           <Draggable axis="y" key={content}>
                             <div
-                              className="bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition cursor-copy border"
-                              onClick={() => {
-                                navigator.clipboard.writeText(content);
-                                toast("Bio copied to clipboard", {
-                                  icon: "✂️",
-                                });
-                              }}
+                              className="bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition border"
                               key={content}
                             >
                               {index === 0 && (
