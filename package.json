@@ -29,6 +29,7 @@
     "eslint-config-next": "13.3.0",
     "eventsource-parser": "^1.0.0",
     "firebase": "^9.20.0",
+    "highlight.js": "^11.8.0",
     "lucide-react": "^0.171.0",
     "next": "13.3.0",
     "next-progress": "^2.3.1",
