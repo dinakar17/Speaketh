@@ -60,6 +60,8 @@ const Community = () => {
     ...doc.data(),
   }));
 
+  // console.log(messages);
+
   return (
     <>
       <div className="h-screen relative flex flex-col">

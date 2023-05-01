@@ -44,6 +44,28 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   // };
 
   const handleDelete = async () => {
+
+    // check if user is logged in
+    if (!user) {
+      toast.error("You must be logged in to delete a message");
+      return;
+    }
+
+    // check if the user is the owner of the message
+    if (message.userId !== user?.uid) {
+      toast.error("You can only delete your own messages");
+      return;
+    }
+
+    // console.log(message);
+
+    // check if message is already deleted
+    if (!message.text) {
+      toast.error("Message already deleted");
+      return;
+    }
+
+
     // construct a reference to the message document
     const messageRef: DocumentReference = doc(db, "messages", message.id);
 
@@ -60,6 +82,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       toast.error("You must be logged in to like a message");
       return;
     }
+
 
     // if the user has already liked the message, remove their like
     if (message.likes.includes(user?.uid)) {

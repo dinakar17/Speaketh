@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import Timer from "./Timer";
-import { AudioAnalysisDialog } from "./loaders/Loaders";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { getRandomFact, preprocessMarkdown } from "@/utils/helpers ";
+import {  preprocessMarkdown } from "@/utils/helpers ";
 import Draggable from "react-draggable";
-import { translateSpeechToText } from "@/utils/WhisperAPI ";
 import { generateContent } from "@/utils/Gpt3API ";
 import { Pencil } from "lucide-react";
 
@@ -22,7 +20,7 @@ const splitString = (str: string) => {
   return [firstPart, secondPart];
 };
 
-const countDown = 40;
+const countDown = 130;
 const characterLimit = 1000;
 
 const ParagraphMode = (props: ParagraphModeProps) => {
