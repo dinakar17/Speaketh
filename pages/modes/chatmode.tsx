@@ -1,3 +1,5 @@
+// pages/modes/chatmode.tsx
+
 import { useState, useEffect, useRef } from "react";
 import { translateSpeechToText } from "@/utils/WhisperAPI ";
 import { toast } from "react-hot-toast";

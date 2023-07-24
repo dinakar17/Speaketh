@@ -1,3 +1,5 @@
+// hooks/useUserMedia.ts
+
 import { useEffect, useState } from "react";
 
 const useUserMedia = () => {

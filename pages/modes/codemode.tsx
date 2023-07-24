@@ -1,3 +1,5 @@
+// pages/modes/codemode.tsx
+
 import dynamic from 'next/dynamic'
 import React, { useState } from "react";
 import Tabs from "@/components/ui/tabs ";

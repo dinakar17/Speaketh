@@ -1,3 +1,5 @@
+// pages/modes/pitchyouridea.tsx
+
 import React, { useState } from "react";
 import Tabs from "@/components/ui/tabs ";
 import { toast } from "react-hot-toast";
@@ -8,7 +10,7 @@ import { translateSpeechToText } from "@/utils/WhisperAPI ";
 import { AudioAnalysisDialog } from "@/components/loaders/Loaders ";
 import { getRandomFact, preprocessMarkdown } from "@/utils/helpers ";
 
-const PresentationMode: React.FC = () => {
+const PitchYourIdea: React.FC = () => {
   const [slideText, setSlideText] = useState<string>("");
   const [uploaded, setUploaded] = useState(false);
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -159,4 +161,4 @@ const PresentationMode: React.FC = () => {
   );
 };
 
-export default PresentationMode;
+export default PitchYourIdea;

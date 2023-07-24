@@ -1,3 +1,5 @@
+// utils/helpers.ts
+
 import facts from "./facts.json";
 
 export const getRandomFact = () => {

@@ -1,3 +1,5 @@
+// pages/_app.tsx
+
 import Navbar from "@/components/Navbar ";
 import "../styles/globals.css";
 import '../styles/homePageStyles.css';

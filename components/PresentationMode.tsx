@@ -12,6 +12,7 @@ const PresentationMode = () => {
     startSpeechToText,
     stopSpeechToText,
   } = useSpeechToText({
+    
     continuous: true,
     useOnlyGoogleCloud: true,
     googleApiKey: "AIzaSyApXXelZg7H3luXy_6loOwOcZqz8Ojblr0",

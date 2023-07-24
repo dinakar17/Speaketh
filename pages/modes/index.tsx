@@ -1,3 +1,5 @@
+// pages\modes\index.tsx
+
 import { useState } from "react";
 import Image from "next/image";
 import { Lightbulb } from "lucide-react";

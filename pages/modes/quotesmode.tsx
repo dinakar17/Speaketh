@@ -1,3 +1,5 @@
+// pages/modes/quotesmode.tsx
+
 import QuotesMode from "@/components/QuotesModePage/QuotesMode ";
 import Welcome from "@/components/QuotesModePage/Welcome ";
 import { generateGPT3Response } from "@/utils/Gpt3API ";

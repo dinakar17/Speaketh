@@ -1,3 +1,5 @@
+// pages/community.tsx
+
 import { useCollection } from "react-firebase-hooks/firestore";
 import {
   DocumentData,

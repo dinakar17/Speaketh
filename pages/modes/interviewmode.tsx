@@ -1,3 +1,5 @@
+// pages/modes/interviewmode.tsx
+
 import InterviewMode from "@/components/InterviewMode/InterviewMode ";
 import RequiredInfo from "@/components/InterviewMode/RequiredInfo ";
 import React, { useState } from "react";

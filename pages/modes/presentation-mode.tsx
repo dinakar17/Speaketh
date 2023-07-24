@@ -1,3 +1,5 @@
+// pages/modes/presentation-mode.tsx
+
 import React, { useState } from "react";
 import Tabs from "@/components/ui/tabs ";
 import { toast } from "react-hot-toast";
@@ -108,8 +110,16 @@ const PresentationMode: React.FC = () => {
               />
               {/* Display converted text from audio */}
               {convertedText !== "" && (
-                <Draggable axis="y">
-                  <div className="mb-4 bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition border mx-auto max-w-screen-lg">
+                <Draggable axis="y" key={convertedText}>
+                  <div
+                    onClick={() => {
+                      navigator.clipboard.writeText(convertedText);
+                      toast("Bio copied to clipboard", {
+                        icon: "✂️",
+                      });
+                    }}
+                    className="mb-4 bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition border mx-auto max-w-screen-lg"
+                  >
                     <h2 className="text-lg font-bold mt-4">Transcribed Text</h2>
                     <p className="mt-1 text-gray-600 w-full mx-auto p-2 prose prose-sm max-w-screen-xl prose-indigo md:prose-base dark:prose-invert overflow-auto">
                       {convertedText}
@@ -129,6 +139,12 @@ const PresentationMode: React.FC = () => {
                             <div
                               className="bg-white rounded-xl shadow-lg p-4 hover:bg-gray-100 transition border"
                               key={content}
+                              onClick={() => {
+                                navigator.clipboard.writeText(content);
+                                toast("Bio copied to clipboard", {
+                                  icon: "✂️",
+                                });
+                              }}
                             >
                               {index === 0 && (
                                 <>
